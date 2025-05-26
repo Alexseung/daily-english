@@ -1,8 +1,0 @@
-{
-  "cron": [
-    {
-      "path": "/api/send-bulk-email",
-      "schedule": "0 7 * * *"
-    }
-  ]
-}
