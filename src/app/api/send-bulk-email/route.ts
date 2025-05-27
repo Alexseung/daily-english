@@ -5,7 +5,7 @@ import Announcement from '@/emails/Announcement';
 import {differenceInCalendarDays} from 'date-fns';
 import React from 'react';
 
-export async function POST() {
+export async function GET() {
   const resend = new Resend(process.env.RESEND_API_KEY!);
 
   const supabase = createClient(
