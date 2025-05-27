@@ -6,6 +6,7 @@ import {differenceInCalendarDays} from 'date-fns';
 import React from 'react';
 
 export async function GET() {
+  console.log('✅ 크론잡 실행됨: 이메일 발송 시작');
   const resend = new Resend(process.env.RESEND_API_KEY!);
 
   const supabase = createClient(
