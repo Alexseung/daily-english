@@ -23,7 +23,7 @@ export default function Header() {
 
   return (
     <>
-      <header className='flex my-2 justify-center w-full'>
+      <header className='flex mb-2 justify-center w-full'>
         <nav className='p-2 rounded-xl flex justify-between items-center w-full max-w-5xl px-4'>
           <p className='bg-stone-500 w-16 h-6' onClick={() => handleRoute('/')}>
             Logo
@@ -31,7 +31,7 @@ export default function Header() {
 
           <div className='flex gap-12'>
             <button
-              className='font-bold text-xl'
+              className='font-bold text-xl hover:cursor-pointer hover:bg-stone-200 rounded-md p-1'
               onClick={() =>
                 (window.location.href =
                   'https://stepinenglish.notion.site/Step-in-English-1fc29a68a95f80439b35e1ddf3c9069c?pvs=4')
@@ -41,7 +41,7 @@ export default function Header() {
             </button>
 
             <button
-              className='font-bold text-xl bg-purple-300 p-1 rounded-md hover:cursor-pointer'
+              className='font-bold text-xl bg-purple-300 p-1 rounded-xl hover:cursor-pointer'
               onClick={handleOpenModal}
             >
               구독하기

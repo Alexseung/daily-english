@@ -1,3 +1,7 @@
+export const config = {
+  schedule: '*/3 * * * *',
+};
+
 import {Resend} from 'resend';
 import {createClient} from '@supabase/supabase-js';
 import {contents} from '@/english-expression/daily-expression';
