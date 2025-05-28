@@ -25,8 +25,11 @@ export default function Header() {
     <>
       <header className='flex mb-2 justify-center w-full'>
         <nav className='p-2 rounded-xl flex justify-between items-center w-full max-w-5xl px-4'>
-          <p className='bg-stone-500 w-16 h-6' onClick={() => handleRoute('/')}>
-            Logo
+          <p
+            className='w-16 h-6 text-xl font-extrabold text-purple-600'
+            onClick={() => handleRoute('/')}
+          >
+            DailyEnglish
           </p>
 
           <div className='flex gap-12'>
