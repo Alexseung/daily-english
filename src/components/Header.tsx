@@ -53,10 +53,7 @@ export default function Header() {
         </nav>
       </header>
 
-      <EmailModal
-        ref={modalRef}
-        message='구독하고 영어 표현 알아가실래요? 📧'
-      />
+      <EmailModal ref={modalRef} message='메일 구독하기 📧' />
     </>
   );
 }
