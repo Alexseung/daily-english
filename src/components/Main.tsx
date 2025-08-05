@@ -31,7 +31,7 @@ export default function Main() {
           구독하기
         </button>
       </section>
-      <EmailModal ref={modalRef} message='메일을 구독하시겠습니까? 📧' />
+      <EmailModal ref={modalRef} message='메일을 구독하시겠습니까?' />
       <section className='py-40'>
         <p className='text-5xl font-bold'>What am I supposed to do?</p>
         <p className='text-4xl my-20 text-stone-500'>
@@ -57,7 +57,7 @@ export default function Main() {
             <p className='my-1'>문장은 저희가 알려줄게요.</p>
             <p className='mb-4'>여러분은 생각만 하세요.</p>
             <strong className='text-stone-600'>
-              내가 이 문장을 어떤 상황에서 쓸 수 있지?..
+              '내가 이 문장을 어떤 상황에서 쓸 수 있지?..'
             </strong>
           </div>
         </div>

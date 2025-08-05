@@ -15,7 +15,7 @@ export default function EmailSubscribeForm() {
 
     try {
       const res = await fetch('/api/subscribe', {
-        method: 'POST',
+        method: 'POST', // 데이터 보내기
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email}),
       });
