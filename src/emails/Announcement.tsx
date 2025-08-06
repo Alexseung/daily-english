@@ -125,11 +125,18 @@
 import { Html } from "@react-email/html";
 import { Button } from "@react-email/components";
 
-type Props = {
+type Item = {
   id: string;
+  content: string;
+  meaning: string;
+  sentences: string[];
 };
 
-export default function Announcement({ id }: Props) {
+type Props = {
+  item: Item;
+};
+
+export default function Announcement({ item }: Props) {
   return (
     <Html lang="ko">
       <div
@@ -170,7 +177,7 @@ export default function Announcement({ id }: Props) {
               textAlign: "center",
             }}
           >
-            It's not rocket science
+            {item.content}
           </h2>
 
           <p
@@ -181,8 +188,7 @@ export default function Announcement({ id }: Props) {
               textAlign: "center",
             }}
           >
-            something is not difficult to understand or do; it's simple and
-            straightforward.
+            {item.meaning}
           </p>
 
           <hr
@@ -202,7 +208,11 @@ export default function Announcement({ id }: Props) {
               lineHeight: "1.6",
             }}
           >
-            sentences
+            {item.sentences.map((sentence, index) => (
+              <li key={index} style={{ marginBottom: "8px" }}>
+                - {sentence}
+              </li>
+            ))}
           </ul>
 
           <div
@@ -212,7 +222,7 @@ export default function Announcement({ id }: Props) {
             }}
           >
             <Button
-              href={`https://daily-english-five.vercel.app/${id}`}
+              href={`https://daily-english-five.vercel.app/${item.id}`}
               style={{
                 backgroundColor: "#6f6f70ff",
                 color: "#ffffff",
