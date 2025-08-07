@@ -45,7 +45,13 @@
 
 import { contents } from "@/english-expression/daily-expression";
 
-export default function ContentPage({ params }: { params: { day: string } }) {
+type PageProps = {
+  params: {
+    day: string;
+  };
+};
+
+export default function ContentPage({ params }: PageProps) {
   const item = contents.find((content) => content.id === params.day);
 
   if (!item) return <div>해당 콘텐츠를 찾을 수 없습니다.</div>;
