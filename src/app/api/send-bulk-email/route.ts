@@ -50,7 +50,8 @@ export async function GET() {
                 content: contentItem.content,
                 meaning: contentItem.meaning,
                 sentences: contentItem.sentences,
-                meaningInKorean: contentItem.meaningInKorean || "",
+                meaningInKorean: contentItem.meaningInKorean,
+                literalTranslation: contentItem.literalTranslation,
               },
             }),
           });
