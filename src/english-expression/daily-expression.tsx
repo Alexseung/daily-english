@@ -7,6 +7,7 @@ type Content = {
   id: string;
   content: string;
   meaning: string;
+  meaningInKorean: string;
   sentences: string[];
   details: {
     meaningInKorean: string;
@@ -19,6 +20,7 @@ export const contents: Content[] = [
     id: "day1",
     content: "It's not rocket science",
     meaning: "When something is not difficult to understand or do.",
+    meaningInKorean: "직역하면 '<strong>이건 로켓 과학이 아니다</strong>'",
     sentences: [
       "You can just use that remote, it's not rocket science.",
       "It's not rocket science. Why don't you just try it?",
@@ -56,6 +58,7 @@ export const contents: Content[] = [
     id: "day2",
     content: "It could be",
     meaning: "Used to express possibility or uncertainty about something.",
+    meaningInKorean: "직역하면 '<strong>그럴 수도 있다</strong>'",
     sentences: [
       "It could be true, we don’t know yet.",
       "That could be the reason why she left.",
@@ -91,6 +94,7 @@ export const contents: Content[] = [
     content: "It rings a bell",
     meaning:
       "Used when something sounds familiar but you can't fully remember it.",
+    meaningInKorean: "직역하면 '<strong>그게 벨을 울리네.</strong>'",
     sentences: [
       "That name rings a bell, but I can’t recall where we met.",
       "Your story rings a bell, I think I heard it before.",
@@ -126,6 +130,7 @@ export const contents: Content[] = [
     content: "I'm easy",
     meaning:
       "Used to say that you don't mind or have no preference in a situation.",
+    meaningInKorean: "직역하면 '<strong>난 쉬워</strong>'",
     sentences: [
       "Where do you want to eat? I'm easy, you choose.",
       "I'm easy, anything works for me.",
@@ -159,6 +164,7 @@ export const contents: Content[] = [
     id: "day5",
     content: "Fair enough",
     meaning: "Used to acknowledge that something is reasonable or acceptable.",
+    meaningInKorean: "직역하면 '<strong>공정하다</strong>'",
     sentences: [
       "You don’t want to go out because you’re tired? Fair enough.",
       "Fair enough, I understand your point.",
@@ -192,6 +198,7 @@ export const contents: Content[] = [
     id: "day6",
     content: "Don't mention it",
     meaning: "Used as a polite response when someone thanks you.",
+    meaningInKorean: "직역하면 '<strong>그것을 언급하지 마.</strong>'",
     sentences: [
       "Thanks for helping me out! Don't mention it.",
       "Don't mention it, it was no trouble at all.",
