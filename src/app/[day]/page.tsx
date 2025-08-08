@@ -61,7 +61,7 @@ export default async function ContentPage({ params }: Props) {
       <h2 className="text-2xl font-bold text-gray-700 mt-2">{item.content}</h2>
       <p
         className="text-gray-600 my-8 text-left"
-        dangerouslySetInnerHTML={{ __html: item.details.meaningInKorean }}
+        dangerouslySetInnerHTML={{ __html: item.details.deatilMeaningInKorean }}
       />
       <ul className="list-disc list-inside mt-2 space-y-1 border-t border-t-[1px] mx-auto max-w-3xl pt-2">
         {item.details.exampleSentences.map((el, index) => (

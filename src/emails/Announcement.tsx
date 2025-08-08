@@ -138,6 +138,7 @@ type Item = {
   content: string;
   meaning: string;
   meaningInKorean: string;
+  literalTranslation: string;
   sentences: string[];
 };
 
@@ -226,6 +227,7 @@ export default function Announcement({ item }: Props) {
             >
               {item.content}
             </h2>
+            <p>{item.literalTranslation}</p>
 
             <p
               style={{
@@ -236,6 +238,16 @@ export default function Announcement({ item }: Props) {
               }}
             >
               {item.meaning}
+            </p>
+            <p
+              style={{
+                fontSize: "16px",
+                color: "#334155",
+                marginBottom: "16px",
+                textAlign: "center",
+              }}
+            >
+              {item.meaningInKorean}
             </p>
 
             <p
