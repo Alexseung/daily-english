@@ -45,14 +45,13 @@
 
 import { contents } from "@/english-expression/daily-expression";
 
-type PageProps = {
-  params: {
-    day: string;
-  };
+type Props = {
+  params: Promise<{ day: string }>;
 };
 
-export default function ContentPage({ params }: PageProps) {
-  const item = contents.find((content) => content.id === params.day);
+export default async function ContentPage({ params }: Props) {
+  const { day } = await params; // 여기서 await 필수
+  const item = contents.find((content) => content.id === day);
 
   if (!item) return <div>해당 콘텐츠를 찾을 수 없습니다.</div>;
 
@@ -60,12 +59,10 @@ export default function ContentPage({ params }: PageProps) {
     <div className="p-5 font-sans text-center">
       <h1 className="text-xl text-gray-800">오늘의 표현</h1>
       <h2 className="text-2xl font-bold text-gray-700 mt-2">{item.content}</h2>
-
       <p
         className="text-gray-600 my-8 text-left"
         dangerouslySetInnerHTML={{ __html: item.details.meaningInKorean }}
       />
-
       <ul className="list-disc list-inside mt-2 space-y-1 border-t border-t-[1px] mx-auto max-w-3xl pt-2">
         {item.details.exampleSentences.map((el, index) => (
           <li key={index} className="text-gray-600 list-none my-6">
