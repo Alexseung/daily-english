@@ -94,7 +94,16 @@ export default function Announcement({ item }: Props) {
             >
               {item.content}
             </h2>
-            <p>{item.literalTranslation}</p>
+            <p
+              style={{
+                fontSize: "14px",
+                color: "#6b7280",
+                marginBottom: "8px",
+                textAlign: "center",
+              }}
+            >
+              {item.literalTranslation}
+            </p>
 
             <p
               style={{
@@ -117,17 +126,6 @@ export default function Announcement({ item }: Props) {
               {item.meaningInKorean}
             </p>
 
-            <p
-              style={{
-                fontSize: "16px",
-                color: "#000000",
-                marginBottom: "14px",
-                textAlign: "center",
-              }}
-            >
-              {`"${item.meaningInKorean}"`}
-            </p>
-
             <hr
               style={{
                 border: "none",
@@ -138,10 +136,11 @@ export default function Announcement({ item }: Props) {
 
             <ul
               style={{
+                listStyleType: "disc",
                 listStyle: "none",
                 padding: 0,
                 color: "#334155",
-                fontSize: "16px",
+                fontSize: "18px",
                 lineHeight: "1.6",
               }}
             >
