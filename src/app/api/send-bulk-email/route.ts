@@ -2,11 +2,25 @@ import { Resend } from "resend";
 import { createClient } from "@supabase/supabase-js";
 import { contents } from "@/english-expression/daily-expression";
 import Announcement from "@/emails/Announcement";
-import { differenceInCalendarDays } from "date-fns";
 import React from "react";
 
+function getBusinessDaysDiff(startDate: Date, endDate: Date): number {
+  let count = 0;
+  const current = new Date(startDate);
+
+  while (current < endDate) {
+    const day = current.getDay(); // 0 = 일, 6 = 토
+    if (day !== 0 && day !== 6) {
+      count++;
+    }
+    current.setDate(current.getDate() + 1);
+  }
+
+  return count;
+}
+
 export async function GET() {
-  console.log("✅이메일 발송 시작");
+  console.log("✅ 이메일 발송 시작");
   const resend = new Resend(process.env.RESEND_API_KEY!);
 
   const supabase = createClient(
@@ -30,7 +44,9 @@ export async function GET() {
         .filter((user) => user.email && user.created_at)
         .map((user) => {
           const createdDate = new Date(user.created_at);
-          const rawDays = differenceInCalendarDays(today, createdDate);
+
+          const rawDays = getBusinessDaysDiff(createdDate, today);
+
           const dayIndex = rawDays - 1;
 
           if (dayIndex < 0 || dayIndex >= contents.length) {
@@ -41,7 +57,7 @@ export async function GET() {
           const contentItem = contents[dayIndex];
 
           return resend.emails.send({
-            from: "dailyenshligh@stepinenglish.co.kr",
+            from: "dailyenglish@stepinenglish.co.kr",
             to: user.email,
             subject: `Day ${dayIndex + 1}: ${contentItem.content}`,
             react: React.createElement(Announcement, {
