@@ -4,19 +4,27 @@ import { contents } from "@/english-expression/daily-expression";
 import Announcement from "@/emails/Announcement";
 import React from "react";
 
-function getBusinessDaysDiff(startDate: Date, endDate: Date): number {
-  let count = 0;
-  const current = new Date(startDate);
+/**
+ * created_at 다음날부터 카운트를 시작
+ * - 첫 번째 평일이면 index = 0
+ * - 주말(토·일)은 건너뛰고 index 증가 없음
+ * - 평일만 index 증가
+ * → 최종적으로 몇 번째 콘텐츠를 보낼지 결정
+ */
+function getBusinessDayIndex(createdAt: Date, today: Date): number {
+  let index = -1; // 첫 평일에서 0으로 시작하도록 -1로 세팅
+  const current = new Date(createdAt);
+  current.setDate(current.getDate() + 1); // created_at 다음날부터 시작
 
-  while (current < endDate) {
-    const day = current.getDay(); // 0 = 일, 6 = 토
+  while (current <= today) {
+    const day = current.getDay(); // 0 = 일요일, 6 = 토요일
     if (day !== 0 && day !== 6) {
-      count++;
+      index++; // 평일일 때만 카운트 증가
     }
-    current.setDate(current.getDate() + 1);
+    current.setDate(current.getDate() + 1); // 하루씩 이동
   }
 
-  return count;
+  return index;
 }
 
 export async function GET() {
@@ -28,6 +36,7 @@ export async function GET() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
+  // DB에서 유저의 email과 가입일(created_at) 가져오기
   const { data: users, error } = await supabase
     .from("email")
     .select("email, created_at");
@@ -41,14 +50,14 @@ export async function GET() {
   try {
     const results = await Promise.all(
       users
-        .filter((user) => user.email && user.created_at)
+        .filter((user) => user.email && user.created_at) // 이메일과 가입일이 있는 유저만
         .map((user) => {
           const createdDate = new Date(user.created_at);
 
-          const rawDays = getBusinessDaysDiff(createdDate, today);
+          // 가입일 기준 오늘까지 몇 번째 평일이 지났는지 계산
+          const dayIndex = getBusinessDayIndex(createdDate, today);
 
-          const dayIndex = rawDays - 1;
-
+          // 아직 첫 번째 평일이 안 됐거나, 콘텐츠를 다 소진한 경우
           if (dayIndex < 0 || dayIndex >= contents.length) {
             console.log(`⏩ ${user.email} 은 아직 콘텐츠를 받을 차례가 아님.`);
             return null;
@@ -56,10 +65,11 @@ export async function GET() {
 
           const contentItem = contents[dayIndex];
 
+          // 이메일 발송
           return resend.emails.send({
             from: "dailyenglish@stepinenglish.co.kr",
             to: user.email,
-            subject: `Day ${dayIndex + 1}: ${contentItem.content}`,
+            subject: `Day ${dayIndex + 1}: ${contentItem.content}`, // Day 1부터 표시
             react: React.createElement(Announcement, {
               item: {
                 id: contentItem.id || `day${dayIndex + 1}`,
