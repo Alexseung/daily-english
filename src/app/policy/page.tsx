@@ -11,9 +11,9 @@ export default function PolicyPage() {
       </p>
 
       <p className="mb-6 text-gray-700 leading-relaxed">
-        Daily English(이하 "데일리 잉글리쉬")는 사용자의 개인정보를 중요하게
-        생각하며, 관련 법령을 준수합니다. 본 방침은 서비스가 이메일 주소를
-        포함한 개인정보를 어떻게 수집, 이용, 보관, 삭제하는지 설명합니다.
+        Daily English(이하 &quot;데일리 잉글리쉬&quot;)는 사용자의 개인정보를
+        중요하게 생각하며, 관련 법령을 준수합니다. 본 방침은 서비스가 이메일
+        주소를 포함한 개인정보를 어떻게 수집, 이용, 보관, 삭제하는지 설명합니다.
       </p>
 
       <section className="mb-8">
@@ -61,8 +61,8 @@ export default function PolicyPage() {
         </h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
           <li>
-            구독 해지요청 이메일(tmdmrs522@gmail.com) 발송 후 담당자 확인 시
-            서비스 DB에서 즉시 삭제
+            구독 해지요청 내용을 이메일(tmdmrs522@gmail.com) 발송 후 담당자 확인
+            시 서비스 DB에서 즉시 삭제
           </li>
           <li>전자적 파일 형태의 정보는 복구 불가능한 방법으로 삭제</li>
         </ul>
