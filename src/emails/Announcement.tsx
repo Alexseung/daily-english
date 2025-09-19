@@ -179,6 +179,7 @@
 //   );
 // }
 
+/* eslint-disable @next/next/no-head-element */
 import { Html } from "@react-email/html";
 
 type Item = {

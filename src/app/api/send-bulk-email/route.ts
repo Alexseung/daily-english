@@ -4,13 +4,6 @@ import { contents } from "@/english-expression/daily-expression";
 import Announcement from "@/emails/Announcement";
 import React from "react";
 
-/**
- * created_at 다음날부터 카운트를 시작
- * - 첫 번째 평일이면 index = 0
- * - 주말(토·일)은 건너뛰고 index 증가 없음
- * - 평일만 index 증가
- * → 최종적으로 몇 번째 콘텐츠를 보낼지 결정
- */
 function getBusinessDayIndex(createdAt: Date, today: Date): number {
   let index = -1; // 첫 평일에서 0으로 시작하도록 -1로 세팅
   const current = new Date(createdAt);
