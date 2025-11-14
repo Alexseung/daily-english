@@ -152,7 +152,7 @@ export default function Main() {
       <section className="mt-20 mb-16 text-center fade-up">
         <div className="space-y-4">
           <p className="text-4xl md:text-5xl font-extrabold text-[#6b4b59] leading-tight">
-            “It’s not rocket science!”
+            “It&apos;s not rocket science!”
           </p>
           <p className="text-3xl md:text-4xl font-extrabold text-[#9b6d8c] leading-tight">
             이런 실생활 영어 표현, 어렵지 않아요
