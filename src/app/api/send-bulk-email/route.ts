@@ -5,23 +5,38 @@ import Announcement from "@/emails/Announcement";
 import React from "react";
 
 function getBusinessDayIndex(createdAt: Date, today: Date): number {
-  let index = -1; // 첫 평일에서 0으로 시작하도록 -1로 세팅
-  const current = new Date(createdAt);
-  current.setDate(current.getDate() + 1); // created_at 다음날부터 시작
+  let index = -1;
+  const cursor = new Date(createdAt);
+  cursor.setDate(cursor.getDate() + 1); // 가입 다음날부터 카운트 시작
 
-  while (current <= today) {
-    const day = current.getDay(); // 0 = 일요일, 6 = 토요일
-    if (day !== 0 && day !== 6) {
-      index++; // 평일일 때만 카운트 증가
+  while (cursor <= today) {
+    const day = cursor.getDay(); // 월=1 ~ 금=5만 카운트
+    if (day >= 1 && day <= 5) {
+      index++;
     }
-    current.setDate(current.getDate() + 1); // 하루씩 이동
+    cursor.setDate(cursor.getDate() + 1);
   }
 
   return index;
 }
 
+// 오늘이 평일이 아니라면 발송하지 않도록 안전장치 추가
+function isTodayBusinessDay(date: Date) {
+  const day = date.getDay();
+  return day >= 1 && day <= 5;
+}
+
 export async function GET() {
-  console.log("✅ 이메일 발송 시작");
+  console.log("📨 Bulk email send started");
+
+  const today = new Date();
+
+  // 혹시 GitHub Actions 설정 오류로 주말에 실행돼도 발송되면 안 됨
+  if (!isTodayBusinessDay(today)) {
+    console.log("⏩ 오늘은 평일이 아니라서 발송 스킵");
+    return Response.json({ skipped: true });
+  }
+
   const resend = new Resend(process.env.RESEND_API_KEY!);
 
   const supabase = createClient(
@@ -29,56 +44,63 @@ export async function GET() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // DB에서 유저의 email과 가입일(created_at) 가져오기
   const { data: users, error } = await supabase
     .from("email")
     .select("email, created_at");
 
   if (error || !users) {
+    console.error("❌ 유저 불러오기 실패:", error);
     return new Response("유저 정보를 가져오지 못했습니다.", { status: 500 });
   }
 
-  const today = new Date();
-
   try {
     const results = await Promise.all(
-      users
-        .filter((user) => user.email && user.created_at) // 이메일과 가입일이 있는 유저만
-        .map((user) => {
-          const createdDate = new Date(user.created_at);
+      users.map(async (user) => {
+        if (!user.email || !user.created_at) return null;
 
-          // 가입일 기준 오늘까지 몇 번째 평일이 지났는지 계산
-          const dayIndex = getBusinessDayIndex(createdDate, today);
+        const createdDate = new Date(user.created_at);
+        const dayIndex = getBusinessDayIndex(createdDate, today);
 
-          // 아직 첫 번째 평일이 안 됐거나, 콘텐츠를 다 소진한 경우
-          if (dayIndex < 0 || dayIndex >= contents.length) {
-            console.log(`⏩ ${user.email} 은 아직 콘텐츠를 받을 차례가 아님.`);
-            return null;
-          }
+        // dayIndex가 유효하지 않으면 발송하지 않음
+        if (dayIndex < 0) {
+          console.log(`⏩ ${user.email} 은 아직 발송 차례가 아님`);
+          return null;
+        }
 
-          const contentItem = contents[dayIndex];
+        if (dayIndex >= contents.length) {
+          console.log(`⏩ ${user.email} 은 모든 콘텐츠를 이미 받음`);
+          return null;
+        }
 
-          // 이메일 발송
-          return resend.emails.send({
-            from: "dailyenglish@stepinenglish.co.kr",
-            to: user.email,
-            subject: `Day ${dayIndex + 1}: ${contentItem.content}`, // Day 1부터 표시
-            react: React.createElement(Announcement, {
-              item: {
-                id: contentItem.id || `day${dayIndex + 1}`,
-                content: contentItem.content,
-                meaning: contentItem.meaning,
-                sentences: contentItem.sentences,
-                meaningInKorean: contentItem.meaningInKorean,
-                literalTranslation: contentItem.literalTranslation,
-              },
-            }),
-          });
-        })
+        const item = contents[dayIndex];
+
+        console.log(
+          `📤 Sending to ${user.email} → Day ${dayIndex + 1}: ${item.content}`
+        );
+
+        return resend.emails.send({
+          from: "dailyenglish@stepinenglish.co.kr",
+          to: user.email,
+          subject: `Day ${dayIndex + 1}: ${item.content}`,
+          react: React.createElement(Announcement, {
+            item: {
+              id: item.id,
+              content: item.content,
+              meaning: item.meaning,
+              meaningInKorean: item.meaningInKorean,
+              literalTranslation: item.literalTranslation,
+              sentences: item.sentences,
+            },
+          }),
+        });
+      })
     );
 
-    console.log("✅ 이메일 전송 완료:", results.filter(Boolean));
-    return Response.json({ success: true, results: results.filter(Boolean) });
+    console.log("🎉 이메일 전송 완료!");
+    return Response.json({
+      success: true,
+      sent: results.filter(Boolean).length,
+    });
   } catch (err) {
     console.error("❌ 이메일 전송 오류:", err);
     return new Response("이메일 전송 실패", { status: 500 });

@@ -150,22 +150,20 @@ export default function Main() {
 
       {/* Intro English phrases */}
       <section className="mt-20 mb-16 text-center fade-up">
-        <div className="space-y-6">
+        <div className="space-y-4">
           <p className="text-4xl md:text-5xl font-extrabold text-[#6b4b59] leading-tight">
             “It’s not rocket science!”
           </p>
           <p className="text-3xl md:text-4xl font-extrabold text-[#9b6d8c] leading-tight">
             이런 실생활 영어 표현, 어렵지 않아요
           </p>
-          <p className="text-3xl md:text-4xl font-extrabold text-[#b98f6f] leading-tight">
-            “Let’s call it a day.”
+          <p className="text-4xl md:text-5xl font-extrabold text-[#6b4b59] leading-tight">
+            "Little by little, a little becomes a lot."
+          </p>
+          <p className="text-3xl md:text-4xl font-extrabold text-[#9b6d8c] leading-tight">
+            매일 한 표현씩 배우며, 자연스러운 영어 감각을 익혀보세요.
           </p>
         </div>
-
-        <p className="mt-3 text-base md:text-lg text-[--muted] max-w-2xl mx-auto">
-          매일 한 문장씩 배우며, 자연스러운 영어 감각을 익혀보세요.
-          <br />단 1분이면 충분합니다.
-        </p>
       </section>
 
       <EmailModal
