@@ -158,8 +158,9 @@ export default function Main() {
             이런 실생활 영어 표현, 어렵지 않아요
           </p>
           <p className="text-4xl md:text-5xl font-extrabold text-[#6b4b59] leading-tight">
-            "Little by little, a little becomes a lot."
+            &quot;Little by little, a little becomes a lot.&quot;
           </p>
+
           <p className="text-3xl md:text-4xl font-extrabold text-[#9b6d8c] leading-tight">
             매일 한 표현씩 배우며, 자연스러운 영어 감각을 익혀보세요.
           </p>
