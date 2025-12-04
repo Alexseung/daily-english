@@ -1,5 +1,6 @@
 import { Resend } from "resend";
-import { createClient } from "@supabase/supabase-js";
+import { db } from "@/lib/firebase";
+import { collection, getDocs } from "firebase/firestore";
 import { contents } from "@/english-expression/daily-expression";
 import Announcement from "@/emails/Announcement";
 import React from "react";
@@ -11,18 +12,15 @@ import React from "react";
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const KST_OFFSET = 9 * 60 * 60 * 1000;
 
-// 날짜를 'KST 기준 일 번호'로 변환 (1970-01-01부터 며칠째인지)
 function getKstDayNumber(date: Date): number {
   return Math.floor((date.getTime() + KST_OFFSET) / MS_PER_DAY);
 }
 
-// KST 일 번호 → KST 요일 (0=일요일 ~ 6=토요일)
 function getKstWeekdayFromDayNumber(dayNumber: number): number {
   const utcMsAtKstMidnight = dayNumber * MS_PER_DAY - KST_OFFSET;
   return new Date(utcMsAtKstMidnight).getUTCDay();
 }
 
-// 가입 다음날부터 'KST 기준' 평일만 카운트
 function getBusinessDayIndex(createdAt: Date, today: Date): number {
   const createdDay = getKstDayNumber(createdAt);
   const todayDay = getKstDayNumber(today);
@@ -31,10 +29,7 @@ function getBusinessDayIndex(createdAt: Date, today: Date): number {
 
   for (let day = createdDay + 1; day <= todayDay; day++) {
     const weekday = getKstWeekdayFromDayNumber(day);
-    if (weekday >= 1 && weekday <= 5) {
-      // 월~금만 카운트
-      index++;
-    }
+    if (weekday >= 1 && weekday <= 5) index++;
   }
 
   return index;
@@ -55,26 +50,20 @@ export async function GET() {
 
   const today = new Date();
 
-  // GitHub Actions가 잘못 실행되더라도 주말 발송 방지
+  // 주말 발송 방지
   if (!isTodayBusinessDay(today)) {
-    console.log("⏩ 오늘은 평일이 아니라서 발송 스킵");
+    console.log("⏩ 오늘은 주말이라 발송 스킵");
     return Response.json({ skipped: true });
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY!);
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
 
-  const { data: users, error } = await supabase
-    .from("email")
-    .select("email, created_at");
-
-  if (error || !users) {
-    console.error("❌ 유저 불러오기 실패:", error);
-    return new Response("유저 정보를 가져오지 못했습니다.", { status: 500 });
-  }
+  // 🔥 Firestore에서 이메일 리스트 불러오기
+  const snapshot = await getDocs(collection(db, "emails"));
+  const users = snapshot.docs.map((doc) => ({
+    email: doc.data().email,
+    created_at: doc.data().createdAt?.toDate?.(),
+  }));
 
   try {
     const results = await Promise.all(
@@ -82,18 +71,10 @@ export async function GET() {
         if (!user.email || !user.created_at) return null;
 
         const createdDate = new Date(user.created_at);
-
         const dayIndex = getBusinessDayIndex(createdDate, today);
 
-        if (dayIndex < 0) {
-          console.log(`⏩ ${user.email} 아직 발송 차례 아님`);
-          return null;
-        }
-
-        if (dayIndex >= contents.length) {
-          console.log(`⏩ ${user.email} 이미 모든 콘텐츠 수신 완료`);
-          return null;
-        }
+        if (dayIndex < 0) return null;
+        if (dayIndex >= contents.length) return null;
 
         const item = contents[dayIndex];
 
@@ -105,22 +86,12 @@ export async function GET() {
           from: "dailyenglish@stepinenglish.co.kr",
           to: user.email,
           subject: `Day ${dayIndex + 1}: ${item.content}`,
-          react: React.createElement(Announcement, {
-            item: {
-              id: item.id,
-              content: item.content,
-              meaning: item.meaning,
-              meaningInKorean: item.meaningInKorean,
-              literalTranslation: item.literalTranslation,
-              sentences: item.sentences,
-            },
-          }),
+          react: React.createElement(Announcement, { item }),
         });
       })
     );
 
     console.log("🎉 이메일 전송 완료!");
-
     return Response.json({
       success: true,
       sent: results.filter(Boolean).length,

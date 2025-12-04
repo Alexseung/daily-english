@@ -28,21 +28,18 @@ export default function EmailSubscribeForm({ onSuccess }: Props) {
 
       const data = await res.json();
 
+      // ❗ Firebase는 duplicate 오류가 기본적으로 없음
       if (!res.ok) {
-        if (
-          data?.error?.includes("duplicate key value") ||
-          data?.error?.includes("already exists")
-        ) {
-          throw new Error("이미 구독해주셨네요? 화이팅!");
-        }
+        throw new Error(data?.message || "문제가 발생했어요");
       }
-      throw new Error(data?.error || "문제가 발생했어요");
 
+      // 성공 처리
       setStatus("success");
       setMessage(
         "구독이 완료되었습니다! 매일 아침 7시 이메일을 확인해보세요 🌞"
       );
       setEmail("");
+
       setTimeout(() => {
         onSuccess?.();
       }, 3000);
@@ -81,7 +78,9 @@ export default function EmailSubscribeForm({ onSuccess }: Props) {
 
       {message && (
         <p
-          className={`text-sm ${status === "error" ? "text-red-500" : "text-[--muted]"}`}
+          className={`text-sm ${
+            status === "error" ? "text-red-500" : "text-[--muted]"
+          }`}
         >
           {message}
         </p>

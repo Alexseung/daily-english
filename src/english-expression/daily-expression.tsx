@@ -108,9 +108,13 @@ export const contents: Content[] = [
     ],
     details: {
       deatilMeaningInKorean:
-        "직역하면 '<strong>벨이 울린다</strong>'라는 뜻으로, \
-        <strong>어떤 이름이나 상황이 익숙하게 느껴지지만 정확히 기억나지 않을 때 사용합니다.</strong> \
-        자연스러운 해석으로는 '<strong>어디서 들어본 것 같아</strong>', '<strong>익숙해</strong>'가 있습니다.",
+        "직역하면 '<strong>벨이 울린다</strong>'는 뜻으로, \
+  <strong>어떤 이름이나 정보가 정확히 기억나지 않지만 어딘가 익숙하게 느껴질 때 사용하는 표현입니다.</strong> \
+  누군가 사람 이름이나 장소, 사건을 말했을 때 머릿속에서 어렴풋이 기억이 스쳐 지나가는 순간을 자연스럽게 나타낼 때 쓰입니다. \
+  자연스러운 해석으로는 '<strong>아 나 그거 아는데</strong>', '<strong>어디서 들어본 것 같아</strong>' 등이 있으며, \
+  완전히 기억이 나지 않을 때 그 어중간한 느낌을 표현하는 데 가장 잘 맞습니다. \
+  비슷한 표현으로는 '<strong>It sounds familiar</strong>'가 있습니다.",
+
       exampleSentences: [
         {
           sentence:
