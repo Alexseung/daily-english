@@ -71,6 +71,12 @@ export async function GET(req: Request) {
       reason: "주말은 발송 안함",
     });
   }
+  if (isTodayBusinessDay(nowKST)) {
+    return NextResponse.json({
+      skipped: true,
+      reason: "평일이군요",
+    });
+  }
 
   // ⏰ 오전 7시만 발송
   if (hour !== 7) {
