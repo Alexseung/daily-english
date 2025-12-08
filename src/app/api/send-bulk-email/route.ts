@@ -36,8 +36,8 @@ function getBusinessDayIndex(createdAt: Date, today: Date): number {
 
 // 오늘이 평일인지
 function isTodayBusinessDay(today: Date): boolean {
-  const todayDay = getKstDayNumber(today);
-  const weekday = getKstWeekdayFromDayNumber(todayDay);
+  const kst = new Date(today.getTime() + KST_OFFSET);
+  const weekday = kst.getUTCDay();
   return weekday >= 1 && weekday <= 5;
 }
 
