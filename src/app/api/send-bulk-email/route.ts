@@ -42,18 +42,28 @@ function isTodayBusinessDay(today: Date): boolean {
 }
 
 /* -----------------------------
-    이메일 발송 메인 로직
+    📌 Vercel Scheduled Function 설정
+    한국시간 오전 7시 → UTC 22시 (전날)
 ----------------------------- */
 
-export async function GET() {
-  console.log("📨 Bulk email send started");
+export const runtime = "nodejs";
+export const cron = {
+  schedule: "0 22 * * 1-5", // UTC → KST 기준
+};
+
+/* -----------------------------
+    📨 이메일 발송 메인 로직
+----------------------------- */
+
+export async function scheduled() {
+  console.log("📨 Cron: Bulk email send started");
 
   const today = new Date();
 
-  // 주말 발송 방지
+  // ⛔ 주말 발송 방지
   if (!isTodayBusinessDay(today)) {
     console.log("⏩ 오늘은 주말이라 발송 스킵");
-    return Response.json({ skipped: true });
+    return { skipped: true };
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY!);
@@ -73,8 +83,8 @@ export async function GET() {
         const createdDate = new Date(user.created_at);
         const dayIndex = getBusinessDayIndex(createdDate, today);
 
-        if (dayIndex < 0) return null;
-        if (dayIndex >= contents.length) return null;
+        if (dayIndex < 0) return null; // 다음날부터 시작
+        if (dayIndex >= contents.length) return null; // 모든 데이터 소진됨
 
         const item = contents[dayIndex];
 
@@ -92,12 +102,13 @@ export async function GET() {
     );
 
     console.log("🎉 이메일 전송 완료!");
-    return Response.json({
+
+    return {
       success: true,
       sent: results.filter(Boolean).length,
-    });
+    };
   } catch (err) {
     console.error("❌ 이메일 전송 오류:", err);
-    return new Response("이메일 전송 실패", { status: 500 });
+    return { error: true, message: String(err) };
   }
 }
