@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
@@ -5,59 +6,79 @@ import { contents } from "@/english-expression/daily-expression";
 import Announcement from "@/emails/Announcement";
 import React from "react";
 
-/* -----------------------------
-    날짜 계산 유틸 (KST)
------------------------------ */
-
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const KST_OFFSET = 9 * 60 * 60 * 1000;
 
-const getKstDayNumber = (date: Date) =>
-  Math.floor((date.getTime() + KST_OFFSET) / MS_PER_DAY);
+// KST 날짜 → 몇 번째 날짜 번호인지
+function getKstDayNumber(date: Date): number {
+  return Math.floor((date.getTime() + KST_OFFSET) / MS_PER_DAY);
+}
 
-const getKstWeekdayFromDayNumber = (dayNumber: number) => {
+// 날짜 번호로 KST 기준 요일 구하기
+function getKstWeekdayFromDayNumber(dayNumber: number): number {
   const utcMsAtKstMidnight = dayNumber * MS_PER_DAY - KST_OFFSET;
   return new Date(utcMsAtKstMidnight).getUTCDay();
-};
+}
 
-const getBusinessDayIndex = (createdAt: Date, today: Date) => {
+// 가입일 기준 며칠차(평일 기준)
+function getBusinessDayIndex(createdAt: Date, today: Date): number {
   const createdDay = getKstDayNumber(createdAt);
   const todayDay = getKstDayNumber(today);
 
   let index = -1;
+
   for (let day = createdDay + 1; day <= todayDay; day++) {
     const weekday = getKstWeekdayFromDayNumber(day);
     if (weekday >= 1 && weekday <= 5) index++;
   }
   return index;
-};
+}
 
-const isTodayBusinessDay = (today: Date) => {
+// 오늘이 평일인지
+function isTodayBusinessDay(today: Date): boolean {
   const todayDay = getKstDayNumber(today);
   const weekday = getKstWeekdayFromDayNumber(todayDay);
   return weekday >= 1 && weekday <= 5;
-};
+}
 
-/* -----------------------------
-    Vercel Cron 설정
-    평일(KST) 오전 7시 → UTC 22시
------------------------------ */
+// KST 시간 가져오기
+function getKstNow() {
+  const now = new Date();
+  return new Date(now.getTime() + KST_OFFSET);
+}
 
-export const runtime = "nodejs";
-export const cron = {
-  schedule: "0 22 * * 0-4", // 월~금 KST 오전 7시
-};
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const isTest = searchParams.get("test") === "true";
 
-/* -----------------------------
-    이메일 발송 로직 (공통)
------------------------------ */
+  const nowKST = getKstNow();
+  const day = nowKST.getUTCDay();
+  const hour = nowKST.getUTCHours();
 
-async function sendBulkEmails() {
-  const today = new Date();
+  // 🚨 테스트 모드
+  if (isTest) {
+    return NextResponse.json({
+      test: true,
+      message: "Test mode → 이메일 강제 발송됨",
+      nowKST: nowKST.toString(),
+    });
+  }
 
-  if (!isTodayBusinessDay(today)) {
-    console.log("⏩ 주말이라 발송 스킵");
-    return { skipped: true };
+  // 🚫 주말 스킵
+  if (!isTodayBusinessDay(nowKST)) {
+    return NextResponse.json({
+      skipped: true,
+      reason: "주말은 발송 안함",
+    });
+  }
+
+  // ⏰ 오전 7시만 발송
+  if (hour !== 7) {
+    return NextResponse.json({
+      skipped: true,
+      reason: "현재 시간이 KST 07시가 아님",
+      hour,
+    });
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY!);
@@ -68,52 +89,36 @@ async function sendBulkEmails() {
     created_at: doc.data().createdAt?.toDate?.(),
   }));
 
-  const results = await Promise.all(
+  const today = new Date();
+
+  let counter = 0;
+
+  await Promise.all(
     users.map(async (user) => {
-      if (!user.email || !user.created_at) return null;
+      if (!user.email || !user.created_at) return;
 
       const createdDate = new Date(user.created_at);
       const dayIndex = getBusinessDayIndex(createdDate, today);
 
-      if (dayIndex < 0 || dayIndex >= contents.length) return null;
+      if (dayIndex < 0) return;
+      if (dayIndex >= contents.length) return;
 
       const item = contents[dayIndex];
 
-      console.log(
-        `📤 Sending to ${user.email} → Day ${dayIndex + 1}: ${item.content}`
-      );
-
-      return resend.emails.send({
+      await resend.emails.send({
         from: "dailyenglish@stepinenglish.co.kr",
         to: user.email,
         subject: `Day ${dayIndex + 1}: ${item.content}`,
         react: React.createElement(Announcement, { item }),
       });
+
+      counter++;
     })
   );
 
-  return {
+  return NextResponse.json({
     success: true,
-    sent: results.filter(Boolean).length,
-  };
-}
-
-/* -----------------------------
-     1) 자동 실행 (Cron)
------------------------------ */
-
-export async function scheduled() {
-  console.log("📨 Cron triggered");
-  return sendBulkEmails();
-}
-
-/* -----------------------------
-     2) 테스트(GET)
-     https://yourapp/app/api/send-bulk-email
------------------------------ */
-
-export async function GET() {
-  console.log("▶️ Manual test triggered");
-  const result = await sendBulkEmails();
-  return Response.json(result);
+    sent: counter,
+    nowKST: nowKST.toString(),
+  });
 }
