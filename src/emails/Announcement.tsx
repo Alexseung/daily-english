@@ -168,24 +168,53 @@ export default function Announcement({ item }: Props) {
             </ul>
 
             <div
+              className="button-row"
               style={{
-                textAlign: "center",
-                marginTop: "20px",
+                display: "flex",
+                justifyContent: "center",
+                gap: "12px",
+                marginTop: "24px",
+                flexWrap: "wrap",
               }}
             >
+              {/* 더 자세히 알아보기 버튼 */}
               <a
                 href={`https://daily-english-five.vercel.app/${item.id}`}
                 className="btn"
                 style={{
                   backgroundColor: "#4f46e5",
                   color: "#ffffff",
-                  padding: "12px 24px",
+                  padding: "12px 20px",
                   borderRadius: "8px",
                   textDecoration: "none",
+                  fontSize: "15px",
+                  minWidth: "140px",
+                  textAlign: "center",
+                  fontWeight: "bold",
                   display: "inline-block",
                 }}
               >
-                더 자세히 알아보기
+                더 자세히 보기
+              </a>
+
+              {/* 인스타그램 버튼 */}
+              <a
+                href="https://www.instagram.com/stepinenglish_/"
+                className="btn insta"
+                style={{
+                  backgroundColor: "#f43f5e",
+                  color: "#ffffff",
+                  padding: "12px 20px",
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                  fontSize: "15px",
+                  minWidth: "140px",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  display: "inline-block",
+                }}
+              >
+                Instagram
               </a>
             </div>
           </div>
