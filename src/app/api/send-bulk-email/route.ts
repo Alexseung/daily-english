@@ -1,26 +1,30 @@
-import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firebase"; // 이미 있는 firebase 설정
 import { collection, getDocs } from "firebase/firestore";
+
 import { contents } from "@/english-expression/daily-expression";
 import Announcement from "@/emails/Announcement";
 import React from "react";
 
+/* -----------------------------
+    KST 날짜 계산 유틸
+----------------------------- */
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const KST_OFFSET = 9 * 60 * 60 * 1000;
 
-// KST 날짜 → 몇 번째 날짜 번호인지
+// 날짜를 'KST 기준 일 번호'로 변환 (1970-01-01부터 며칠째인지)
 function getKstDayNumber(date: Date): number {
   return Math.floor((date.getTime() + KST_OFFSET) / MS_PER_DAY);
 }
 
-// 날짜 번호로 KST 기준 요일 구하기
+// KST 일 번호 → KST 요일 (0=일요일 ~ 6=토요일)
 function getKstWeekdayFromDayNumber(dayNumber: number): number {
   const utcMsAtKstMidnight = dayNumber * MS_PER_DAY - KST_OFFSET;
   return new Date(utcMsAtKstMidnight).getUTCDay();
 }
 
-// 가입일 기준 며칠차(평일 기준)
+// 가입 다음날부터 'KST 기준' 평일만 카운트
 function getBusinessDayIndex(createdAt: Date, today: Date): number {
   const createdDay = getKstDayNumber(createdAt);
   const todayDay = getKstDayNumber(today);
@@ -31,91 +35,92 @@ function getBusinessDayIndex(createdAt: Date, today: Date): number {
     const weekday = getKstWeekdayFromDayNumber(day);
     if (weekday >= 1 && weekday <= 5) index++;
   }
+
   return index;
 }
 
-// 오늘이 평일인지
+// 오늘 평일 여부
 function isTodayBusinessDay(today: Date): boolean {
-  const kst = new Date(today.getTime() + KST_OFFSET);
-  const weekday = kst.getUTCDay();
+  const todayDay = getKstDayNumber(today);
+  const weekday = getKstWeekdayFromDayNumber(todayDay);
   return weekday >= 1 && weekday <= 5;
 }
 
-// KST 시간 가져오기
-function getKstNow() {
-  const now = new Date();
-  return new Date(now.getTime() + KST_OFFSET);
-}
+/* -----------------------------
+    이메일 발송 메인 로직 (Firebase)
+----------------------------- */
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const isTest = searchParams.get("test") === "true";
+export async function GET() {
+  console.log("📨 Bulk email send started");
 
-  const nowKST = getKstNow();
-  const day = nowKST.getUTCDay();
-  const hour = nowKST.getUTCHours();
+  const today = new Date();
 
-  // 🚨 테스트 모드
-  if (isTest) {
-    return NextResponse.json({
-      test: true,
-      message: "Test mode → 이메일 강제 발송됨",
-      nowKST: nowKST.toString(),
-    });
-  }
-
-  // 주말 스킵
-  if (!isTodayBusinessDay(nowKST)) {
-    return NextResponse.json({ skipped: true, reason: "주말 스킵" });
-  }
-
-  // ⏰ 오전 7시만 발송
-  if (hour !== 7) {
-    return NextResponse.json({
-      skipped: true,
-      reason: "현재 시간이 KST 07시가 아님",
-      hour,
-    });
+  // 주말 발송 금지
+  if (!isTodayBusinessDay(today)) {
+    console.log("⏩ 오늘은 평일이 아니라서 발송 스킵");
+    return Response.json({ skipped: true });
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY!);
 
-  const snapshot = await getDocs(collection(db, "emails"));
+  // 🔥 Firestore 사용자 조회
+  const snapshot = await getDocs(collection(db, "emails")); // ← "emails" 컬렉션 사용 중이면 맞음
   const users = snapshot.docs.map((doc) => ({
     email: doc.data().email,
     created_at: doc.data().createdAt?.toDate?.(),
   }));
 
-  const today = new Date();
+  try {
+    const results = await Promise.all(
+      users.map(async (user) => {
+        if (!user.email || !user.created_at) return null;
 
-  let counter = 0;
+        const createdDate = new Date(user.created_at);
 
-  await Promise.all(
-    users.map(async (user) => {
-      if (!user.email || !user.created_at) return;
+        const dayIndex = getBusinessDayIndex(createdDate, today);
 
-      const createdDate = new Date(user.created_at);
-      const dayIndex = getBusinessDayIndex(createdDate, today);
+        if (dayIndex < 0) {
+          console.log(`⏩ ${user.email} 아직 발송 차례 아님`);
+          return null;
+        }
 
-      if (dayIndex < 0) return;
-      if (dayIndex >= contents.length) return;
+        if (dayIndex >= contents.length) {
+          console.log(`⏩ ${user.email} 모든 콘텐츠 수신 완료`);
+          return null;
+        }
 
-      const item = contents[dayIndex];
+        const item = contents[dayIndex];
 
-      await resend.emails.send({
-        from: "dailyenglish@stepinenglish.co.kr",
-        to: user.email,
-        subject: `Day ${dayIndex + 1}: ${item.content}`,
-        react: React.createElement(Announcement, { item }),
-      });
+        console.log(
+          `📤 Sending to ${user.email} → Day ${dayIndex + 1}: ${item.content}`
+        );
 
-      counter++;
-    })
-  );
+        return resend.emails.send({
+          from: "dailyenglish@stepinenglish.co.kr",
+          to: user.email,
+          subject: `Day ${dayIndex + 1}: ${item.content}`,
+          react: React.createElement(Announcement, {
+            item: {
+              id: item.id,
+              content: item.content,
+              meaning: item.meaning,
+              meaningInKorean: item.meaningInKorean,
+              literalTranslation: item.literalTranslation,
+              sentences: item.sentences,
+            },
+          }),
+        });
+      })
+    );
 
-  return NextResponse.json({
-    success: true,
-    sent: counter,
-    nowKST: nowKST.toString(),
-  });
+    console.log("🎉 이메일 전송 완료!");
+
+    return Response.json({
+      success: true,
+      sent: results.filter(Boolean).length,
+    });
+  } catch (err) {
+    console.error("❌ 이메일 전송 오류:", err);
+    return new Response("이메일 전송 실패", { status: 500 });
+  }
 }
