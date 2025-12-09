@@ -64,18 +64,9 @@ export async function GET(req: Request) {
     });
   }
 
-  // 🚫 주말 스킵
+  // 주말 스킵
   if (!isTodayBusinessDay(nowKST)) {
-    return NextResponse.json({
-      skipped: true,
-      reason: "주말은 발송 안함",
-    });
-  }
-  if (isTodayBusinessDay(nowKST)) {
-    return NextResponse.json({
-      skipped: true,
-      reason: "평일이군요",
-    });
+    return NextResponse.json({ skipped: true, reason: "주말 스킵" });
   }
 
   // ⏰ 오전 7시만 발송
