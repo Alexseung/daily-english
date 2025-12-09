@@ -177,7 +177,6 @@ export default function Announcement({ item }: Props) {
                 flexWrap: "wrap",
               }}
             >
-              {/* 더 자세히 알아보기 버튼 */}
               <a
                 href={`https://daily-english-five.vercel.app/${item.id}`}
                 className="btn"
@@ -197,7 +196,6 @@ export default function Announcement({ item }: Props) {
                 더 자세히 보기
               </a>
 
-              {/* 인스타그램 버튼 */}
               <a
                 href="https://www.instagram.com/stepinenglish_/"
                 className="btn insta"

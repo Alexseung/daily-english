@@ -28,12 +28,10 @@ export default function EmailSubscribeForm({ onSuccess }: Props) {
 
       const data = await res.json();
 
-      // ❗ Firebase는 duplicate 오류가 기본적으로 없음
       if (!res.ok) {
         throw new Error(data?.message || "문제가 발생했어요");
       }
 
-      // 성공 처리
       setStatus("success");
       setMessage(
         "구독이 완료되었습니다! 매일 아침 7시 이메일을 확인해보세요 🌞"
@@ -51,21 +49,22 @@ export default function EmailSubscribeForm({ onSuccess }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="flex gap-3 items-center">
+      {/* 모바일에서 세로 정렬, 데스크탑에서는 가로 */}
+      <div className="flex gap-3 items-center max-sm:flex-col">
         <input
           type="email"
           required
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 px-5 py-3 rounded-xl border border-gray-100 shadow-sm text-lg"
+          className="flex-1 px-5 py-3 rounded-xl border border-gray-100 shadow-sm text-lg w-full"
           style={{ background: "linear-gradient(180deg,#fff,#fffefc)" }}
         />
 
         <button
           type="submit"
           disabled={status === "loading"}
-          className="px-5 py-3 rounded-xl font-semibold text-white"
+          className="px-5 py-3 rounded-xl font-semibold text-white w-full max-sm:mt-1"
           style={{
             background: "linear-gradient(90deg,#C7A0FF,#FFD6B5)",
             boxShadow: "0 8px 20px rgba(199,160,255,0.18)",

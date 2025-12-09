@@ -27,7 +27,11 @@ const EmailModal = forwardRef<EmailModalHandle, EmailModalProps>(
     return (
       <dialog
         ref={dialog}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] rounded-2xl bg-white text-black overflow-hidden shadow-xl z-50"
+        className="
+          fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+          w-[30rem] max-w-[90%]
+          rounded-2xl bg-white text-black overflow-hidden shadow-xl z-50
+        "
       >
         <div className="p-6">
           <div className="flex items-start justify-between">
@@ -48,7 +52,10 @@ const EmailModal = forwardRef<EmailModalHandle, EmailModalProps>(
           </p>
 
           <div className="mt-6">
-            <EmailSubscribeForm onSuccess={() => dialog.current?.close()} />
+            {/* 여기서 모바일 반응형을 적용하기 위해 래퍼 추가 */}
+            <div className="flex flex-col gap-3 w-full">
+              <EmailSubscribeForm />
+            </div>
           </div>
         </div>
       </dialog>
