@@ -216,7 +216,7 @@ export default function Announcement({ item }: Props) {
                 }}
               >
                 <img
-                  src="/Instagram_Glyph_Gradient.png"
+                  src="https://daily-english-five.vercel.app/Instagram_Glyph_Gradient.png"
                   width="26"
                   height="26"
                   alt="Instagram"
