@@ -181,16 +181,20 @@ export default function Announcement({ item }: Props) {
                 href={`https://daily-english-five.vercel.app/${item.id}`}
                 className="btn"
                 style={{
-                  backgroundColor: "#4f46e5",
-                  color: "#ffffff",
-                  padding: "12px 20px",
-                  borderRadius: "8px",
+                  background: "linear-gradient(90deg,#C7A0FF,#FFD6B5)",
+                  color: "#4b2f31",
+                  padding: "14px 22px",
+                  borderRadius: "14px",
                   textDecoration: "none",
                   fontSize: "15px",
                   minWidth: "140px",
                   textAlign: "center",
                   fontWeight: "bold",
-                  display: "inline-block",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "46px",
+                  boxShadow: "0 6px 16px rgba(199,160,255,0.25)",
                 }}
               >
                 더 자세히 보기
@@ -198,21 +202,26 @@ export default function Announcement({ item }: Props) {
 
               <a
                 href="https://www.instagram.com/stepinenglish_/"
-                className="btn insta"
                 style={{
-                  backgroundColor: "#f43f5e",
-                  color: "#ffffff",
-                  padding: "12px 20px",
-                  borderRadius: "8px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "46px",
+                  height: "46px",
+                  borderRadius: "14px",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #e5e7eb",
                   textDecoration: "none",
-                  fontSize: "15px",
-                  minWidth: "140px",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                  display: "inline-block",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                 }}
               >
-                Instagram
+                <img
+                  src="/Instagram_Glyph_Gradient.png"
+                  width="26"
+                  height="26"
+                  alt="Instagram"
+                  style={{ display: "block" }}
+                />
               </a>
             </div>
           </div>
