@@ -49,7 +49,6 @@ export default function EmailSubscribeForm({ onSuccess }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* 모바일에서 세로 정렬, 데스크탑에서는 가로 */}
       <div className="flex gap-3 items-center max-sm:flex-col">
         <input
           type="email"

@@ -52,7 +52,6 @@ const EmailModal = forwardRef<EmailModalHandle, EmailModalProps>(
           </p>
 
           <div className="mt-6">
-            {/* 여기서 모바일 반응형을 적용하기 위해 래퍼 추가 */}
             <div className="flex flex-col gap-3 w-full">
               <EmailSubscribeForm />
             </div>

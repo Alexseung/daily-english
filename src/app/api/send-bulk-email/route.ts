@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import { db } from "@/lib/firebase"; // 이미 있는 firebase 설정
+import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
 import { contents } from "@/english-expression/daily-expression";
@@ -7,47 +7,49 @@ import Announcement from "@/emails/Announcement";
 import React from "react";
 
 /* -----------------------------
-    KST 날짜 계산 유틸
+    KST 날짜 유틸 (정상 동작)
 ----------------------------- */
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const KST_OFFSET = 9 * 60 * 60 * 1000;
 
-// 날짜를 'KST 기준 일 번호'로 변환 (1970-01-01부터 며칠째인지)
-function getKstDayNumber(date: Date): number {
-  return Math.floor((date.getTime() + KST_OFFSET) / MS_PER_DAY);
+// UTC → KST Date 객체
+function toKstDate(date: Date): Date {
+  return new Date(date.getTime() + KST_OFFSET);
 }
 
-// KST 일 번호 → KST 요일 (0=일요일 ~ 6=토요일)
-function getKstWeekdayFromDayNumber(dayNumber: number): number {
-  const utcMsAtKstMidnight = dayNumber * MS_PER_DAY - KST_OFFSET;
-  return new Date(utcMsAtKstMidnight).getUTCDay();
+// KST 기준 YYYY-MM-DD 문자열
+function getKstDateKey(date: Date): string {
+  return toKstDate(date).toISOString().slice(0, 10);
 }
 
-// 가입 다음날부터 'KST 기준' 평일만 카운트
+// KST 기준 평일 여부
+function isKstBusinessDay(date: Date): boolean {
+  const day = toKstDate(date).getDay(); // 0=일, 6=토
+  return day >= 1 && day <= 5;
+}
+
+// 가입 다음날부터 KST 기준 평일 카운트
 function getBusinessDayIndex(createdAt: Date, today: Date): number {
-  const createdDay = getKstDayNumber(createdAt);
-  const todayDay = getKstDayNumber(today);
+  const start = new Date(getKstDateKey(createdAt));
+  const end = new Date(getKstDateKey(today));
 
   let index = -1;
 
-  for (let day = createdDay + 1; day <= todayDay; day++) {
-    const weekday = getKstWeekdayFromDayNumber(day);
+  for (
+    let d = new Date(start.getTime() + MS_PER_DAY);
+    d <= end;
+    d = new Date(d.getTime() + MS_PER_DAY)
+  ) {
+    const weekday = d.getDay();
     if (weekday >= 1 && weekday <= 5) index++;
   }
 
   return index;
 }
 
-// 오늘 평일 여부
-function isTodayBusinessDay(today: Date): boolean {
-  const todayDay = getKstDayNumber(today);
-  const weekday = getKstWeekdayFromDayNumber(todayDay);
-  return weekday >= 1 && weekday <= 5;
-}
-
 /* -----------------------------
-    이메일 발송 메인 로직 (Firebase)
+    이메일 발송 메인 로직
 ----------------------------- */
 
 export async function GET() {
@@ -55,16 +57,15 @@ export async function GET() {
 
   const today = new Date();
 
-  // 주말 발송 금지
-  if (!isTodayBusinessDay(today)) {
-    console.log("⏩ 오늘은 평일이 아니라서 발송 스킵");
+  // 🚫 주말 발송 금지 (KST 기준)
+  if (!isKstBusinessDay(today)) {
+    console.log("⏩ 오늘은 KST 기준 주말, 발송 스킵");
     return Response.json({ skipped: true });
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY!);
 
-  // 🔥 Firestore 사용자 조회
-  const snapshot = await getDocs(collection(db, "emails")); // ← "emails" 컬렉션 사용 중이면 맞음
+  const snapshot = await getDocs(collection(db, "emails"));
   const users = snapshot.docs.map((doc) => ({
     email: doc.data().email,
     created_at: doc.data().createdAt?.toDate?.(),
@@ -76,7 +77,6 @@ export async function GET() {
         if (!user.email || !user.created_at) return null;
 
         const createdDate = new Date(user.created_at);
-
         const dayIndex = getBusinessDayIndex(createdDate, today);
 
         if (dayIndex < 0) {

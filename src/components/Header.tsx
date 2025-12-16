@@ -41,7 +41,7 @@ export default function Header() {
               <p className="text-lg font-extrabold text-[#6b4b59]">
                 Step in English
               </p>
-              <p className="text-xs text-[--muted] -mt-1">
+              <p className="hidden md:text-xs text-[--muted] -mt-1">
                 매일 한 문장으로 영어 감각
               </p>
             </div>
@@ -74,10 +74,7 @@ export default function Header() {
         </nav>
       </header>
 
-      <EmailModal
-        ref={modalRef}
-        message="이메일로 따뜻한 영어 표현을 받아보세요 ✉️"
-      />
+      <EmailModal ref={modalRef} message="이메일로 영어 표현을 받아보세요 ✉️" />
     </>
   );
 }

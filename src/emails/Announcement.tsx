@@ -203,16 +203,9 @@ export default function Announcement({ item }: Props) {
               <a
                 href="https://www.instagram.com/stepinenglish_/"
                 style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "46px",
-                  height: "46px",
-                  borderRadius: "14px",
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #e5e7eb",
+                  display: "inline-block",
+                  lineHeight: 0,
                   textDecoration: "none",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
                 }}
               >
                 <img
@@ -220,7 +213,9 @@ export default function Announcement({ item }: Props) {
                   width="26"
                   height="26"
                   alt="Instagram"
-                  style={{ display: "block" }}
+                  style={{
+                    display: "block",
+                  }}
                 />
               </a>
             </div>

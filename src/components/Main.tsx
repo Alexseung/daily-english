@@ -22,14 +22,15 @@ export default function Main() {
       >
         <div className="max-w-3xl mx-auto text-center fade-up">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-[#6b4b59]">
-            매일 아침, 한 문장으로 영어 감각을 깨워요
+            매일 아침, 영어 표현 단 하나!
           </h1>
-
           <p className="mt-6 text-lg md:text-xl text-[--muted]">
-            복잡한 공부는 필요 없습니다. 평일 오전 같은 시간에{" "}
-            <strong>한 문장 + 예문 + 해석</strong>을 이메일로 보내드립니다.
+            복잡한 공부는 필요 없습니다.
           </p>
-
+          <p className="text-lg md:text-xl text-[--muted]">
+            매일 아침 <strong>한 문장 + 예문 + 해석</strong>을 이메일로
+            보내드립니다.
+          </p>
           <div className="mt-8 flex justify-center gap-4">
             <button
               onClick={handleOpenModal}
