@@ -203,17 +203,20 @@ export default function Announcement({ item }: Props) {
               <a
                 href="https://www.instagram.com/stepinenglish_/"
                 style={{
-                  display: "inline-block",
-                  lineHeight: 0,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "46px",
+                  width: "46px",
                   textDecoration: "none",
                 }}
               >
                 <img
                   src="https://daily-english-five.vercel.app/Instagram_Glyph_Gradient.png"
-                  width="26"
-                  height="26"
                   alt="Instagram"
                   style={{
+                    width: "30px",
+                    height: "30px",
                     display: "block",
                   }}
                 />
