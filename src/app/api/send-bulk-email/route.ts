@@ -1,5 +1,6 @@
+// app/api/send-bulk-email/route.ts
 import { Resend } from "resend";
-import { db } from "@/lib/firebase";
+import { adminDb } from "@/lib/firebase-admin";
 import { collection, getDocs } from "firebase/firestore";
 
 import { contents } from "@/english-expression/daily-expression";
@@ -65,10 +66,11 @@ export async function GET() {
 
   const resend = new Resend(process.env.RESEND_API_KEY!);
 
-  const snapshot = await getDocs(collection(db, "emails"));
+  const snapshot = await adminDb.collection("emails").get();
+
   const users = snapshot.docs.map((doc) => ({
     email: doc.data().email,
-    created_at: doc.data().createdAt?.toDate?.(),
+    created_at: doc.data().createdAt?.toDate(),
   }));
 
   try {

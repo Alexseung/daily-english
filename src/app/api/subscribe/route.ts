@@ -1,13 +1,12 @@
 // app/api/subscribe/route.ts
-import { db } from "@/lib/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { NextResponse } from "next/server";
+import { adminDb } from "@/lib/firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
 
-    // 이메일 검증
     if (!email || !email.includes("@")) {
       return NextResponse.json(
         { success: false, message: "Invalid email" },
@@ -15,16 +14,14 @@ export async function POST(req: Request) {
       );
     }
 
-    // Firestore에 저장
-    await addDoc(collection(db, "emails"), {
+    await adminDb.collection("emails").add({
       email,
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("❌ 이메일 저장 실패:", error);
-
     return NextResponse.json(
       { success: false, message: "Error saving email" },
       { status: 500 }
