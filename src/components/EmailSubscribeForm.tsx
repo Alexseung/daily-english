@@ -56,18 +56,31 @@ export default function EmailSubscribeForm({ onSuccess }: Props) {
           placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 px-5 py-3 rounded-xl border border-gray-100 shadow-sm text-lg w-full"
+          className="
+      w-full flex-[3]
+      px-6 py-4
+      rounded-xl
+      border border-gray-100
+      shadow-sm
+      text-lg
+    "
           style={{ background: "linear-gradient(180deg,#fff,#fffefc)" }}
         />
 
         <button
           type="submit"
           disabled={status === "loading"}
-          className="px-5 py-3 rounded-xl font-semibold text-white w-full max-sm:mt-1"
+          className="
+      w-full flex-[1]
+      px-5 py-4
+      rounded-xl
+      font-semibold
+      text-white
+      max-sm:mt-1
+    "
           style={{
             background: "linear-gradient(90deg,#C7A0FF,#FFD6B5)",
             boxShadow: "0 8px 20px rgba(199,160,255,0.18)",
-            minWidth: 120,
           }}
         >
           {status === "loading" ? "구독 중..." : "구독하기"}
