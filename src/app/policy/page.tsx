@@ -1,5 +1,3 @@
-// app/policy/page.tsx
-
 export default function PolicyPage() {
   return (
     <main className="max-w-3xl mx-auto px-6 py-12 bg-white rounded-md shadow-lg ring-1 ring-gray-200">
@@ -36,9 +34,14 @@ export default function PolicyPage() {
           2. 개인정보 수집 및 이용 목적
         </h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
-          <li>평일 동일 시간에 Daily English 학습 메일 발송</li>
+          <li>평일 오전 7시(KST) Daily English 학습 메일 발송</li>
           <li>발송 관련 문의 대응 및 구독 관리</li>
-          <li>서비스 품질 향상을 위한 통계 분석(익명 처리 후 사용)</li>
+          <li>
+            서비스 품질 향상을 위한 통계 분석
+            <span className="block text-sm text-gray-500">
+              (개별 이용자를 식별할 수 없도록 익명 처리 후 사용)
+            </span>
+          </li>
         </ul>
       </section>
 
@@ -47,10 +50,10 @@ export default function PolicyPage() {
           3. 개인정보 보관 및 이용 기간
         </h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
-          <li>구독 기간 동안만 보관</li>
+          <li>구독 기간 동안만 개인정보를 보관·이용합니다.</li>
           <li>
-            사용자가 구독 해지를 요청하거나 서비스 제공 목적이 달성되면 즉시
-            삭제
+            사용자가 구독 해지를 요청하거나 서비스 제공 목적이 달성된 경우,
+            개인정보는 지체 없이 삭제됩니다.
           </li>
         </ul>
       </section>
@@ -61,10 +64,18 @@ export default function PolicyPage() {
         </h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
           <li>
-            구독 해지요청 내용을 이메일(tmdmrs522@gmail.com) 발송 후 담당자 확인
-            시 서비스 DB에서 즉시 삭제
+            구독 해지 또는 개인정보 삭제 요청은 아래 이메일을 통해 접수됩니다.
+            <br />
+            <strong>이메일: tmdmrs522@gmail.com</strong>
           </li>
-          <li>전자적 파일 형태의 정보는 복구 불가능한 방법으로 삭제</li>
+          <li>
+            요청 내용 확인 후 서비스 DB(Firebase)에서 해당 이메일 정보를
+            삭제합니다.
+          </li>
+          <li>
+            전자적 파일 형태의 정보는 복구가 불가능한 방법으로 안전하게
+            삭제됩니다.
+          </li>
         </ul>
       </section>
 
@@ -73,7 +84,8 @@ export default function PolicyPage() {
           5. 개인정보 제3자 제공
         </h2>
         <p className="text-gray-700">
-          법령에 따라 요구되는 경우를 제외하고 제3자에게 제공하지 않습니다.
+          데일리 잉글리쉬는 이용자의 개인정보를 원칙적으로 제3자에게 제공하지
+          않습니다. 다만, 법령에 따라 제공이 요구되는 경우에는 예외로 합니다.
         </p>
       </section>
 
@@ -82,8 +94,8 @@ export default function PolicyPage() {
           6. 개인정보 처리 위탁
         </h2>
         <p className="text-gray-700">
-          현재 개인정보 처리 위탁은 없습니다. 추후 위탁이 필요한 경우, 사전에
-          고지하고 동의를 받습니다.
+          현재 개인정보 처리 업무를 외부에 위탁하고 있지 않습니다. 향후 위탁이
+          필요한 경우, 사전에 그 사실을 고지하고 이용자의 동의를 받겠습니다.
         </p>
       </section>
 
@@ -92,24 +104,28 @@ export default function PolicyPage() {
           7. 이용자의 권리
         </h2>
         <ul className="list-disc list-inside space-y-2 text-gray-700">
-          <li>구독 해지 및 개인정보 삭제 요청이 가능합니다.</li>
-          <li>수신 거부 링크는 매 이메일 하단에 포함되어 있습니다.</li>
           <li>
-            개인정보 열람·정정·삭제 요청:{" "}
-            <strong>contact@dailyenglish.com</strong>
+            이용자는 언제든지 구독 해지 및 개인정보 삭제를 요청할 수 있습니다.
+          </li>
+          <li>
+            수신 거부(구독 해지)는 이메일 또는 별도의 문의를 통해 요청할 수
+            있습니다.
+          </li>
+          <li>
+            개인정보 관련 문의 및 요청: <strong>tmdmrs522@gmail.com</strong>
           </li>
         </ul>
       </section>
 
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4 text-indigo-600">
-          8. 보안 조치
+          8. 개인정보 보호를 위한 조치
         </h2>
         <p className="text-gray-700">
-          현재 서비스는 Supabase의 보안 기능을 활용하여 이메일 정보를 안전하게
-          저장하고 있습니다. 별도의 추가 암호화나 보안 시스템은 적용하지
-          않았으나, Supabase가 제공하는 기본 보안과 접근 제어를 준수하고
-          있습니다. 앞으로 보안 수준을 높이기 위한 조치를 검토할 예정입니다.
+          본 서비스는 Firebase가 제공하는 기본적인 보안 기능과 접근 제어를
+          활용하여 이메일 정보를 안전하게 관리하고 있습니다. 현재 별도의 추가
+          암호화 시스템은 적용하지 않았으나, 향후 보안 강화를 위한 조치를 검토할
+          예정입니다.
         </p>
       </section>
 
@@ -128,7 +144,8 @@ export default function PolicyPage() {
           10. 정책 변경
         </h2>
         <p className="text-gray-700">
-          본 방침 내용 변경 시 웹사이트 공지를 통해 알려드립니다/
+          본 개인정보 처리방침의 내용이 변경될 경우, 웹사이트를 통해 사전에
+          공지합니다.
         </p>
       </section>
     </main>
