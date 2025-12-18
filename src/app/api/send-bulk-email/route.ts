@@ -53,7 +53,7 @@ function getBusinessDayIndex(createdAt: Date, today: Date): number {
     이메일 발송 메인 로직
 ----------------------------- */
 
-export async function GET() {
+export async function POST() {
   console.log("📨 Bulk email send started");
 
   const today = new Date();
