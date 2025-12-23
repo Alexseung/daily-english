@@ -100,14 +100,14 @@ export async function POST() {
         return resend.emails.send({
           from: "dailyenglish@stepinenglish.co.kr",
           to: user.email,
-          subject: `Day ${dayIndex + 1}: ${item.content}`,
+          subject: `[오늘의 표현] Day ${dayIndex + 1}: ${item.content}`,
           react: React.createElement(Announcement, {
             item: {
               id: item.id,
               content: item.content,
               meaning: item.meaning,
               meaningInKorean: item.meaningInKorean,
-              literalTranslation: item.literalTranslation,
+              englishInKorean: item.englishInKorean,
               sentences: item.sentences,
             },
           }),

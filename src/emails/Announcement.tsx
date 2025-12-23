@@ -5,7 +5,7 @@ type Item = {
   content: string;
   meaning: string;
   meaningInKorean: string;
-  literalTranslation: string;
+  englishInKorean: string;
   sentences: string[];
 };
 
@@ -119,7 +119,7 @@ export default function Announcement({ item }: Props) {
                 textAlign: "center",
               }}
             >
-              {item.literalTranslation}
+              {item.englishInKorean}
             </p>
 
             <p
