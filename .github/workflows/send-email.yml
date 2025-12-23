@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Call Next.js API route
-        run: curl -X GET "https://daily-english-five.vercel.app/api/send-bulk-email"
+        run: curl -X POST "https://daily-english-five.vercel.app/api/send-bulk-email"
